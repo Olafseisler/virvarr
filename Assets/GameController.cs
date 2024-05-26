@@ -15,13 +15,15 @@ public class GameController : MonoBehaviour
 
     private void Awake()
     {
-        DontDestroyOnLoad(this.gameObject);
-    }
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        instance = this;
+        if (instance == null)
+        {
+            instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+        DontDestroyOnLoad(gameObject);
     }
 
     // Update is called once per frame
@@ -41,11 +43,17 @@ public class GameController : MonoBehaviour
     public void WinGame()
     {
         Debug.Log("You Win!");
-        // Load the next level
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+        // Load the next level if it is not the last level
+        if (SceneManager.GetActiveScene().buildIndex < SceneManager.sceneCountInBuildSettings - 1)
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+        }
+        else
+        {
+            Debug.Log("You have completed all levels!");
+        }
         
         // If it is the last level, save the time elapsed to PlayerPrefs
-        // Must remember 10 best times
         if (SceneManager.GetActiveScene().buildIndex == SceneManager.sceneCountInBuildSettings - 1)
         {
             SaveTime();
@@ -93,12 +101,4 @@ public class GameController : MonoBehaviour
         return bestTimes;
     } 
     
-    // When the player collides with the finish box
-    void OnCollisionEnter2D(Collision2D collision)
-    {
-        if (collision.gameObject.CompareTag("Player"))
-        {
-            WinGame();
-        }
-    }
 }

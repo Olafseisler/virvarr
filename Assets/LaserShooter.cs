@@ -7,12 +7,14 @@ public class LaserShooter : MonoBehaviour
 {
     [SerializeField] private GameObject laserBeamPrefab;
     [SerializeField] private float laserSpeed = 10f; // Desired speed of the laser beam
-
-    LineRenderer aimLine;
     
+    public static GameObject player;
+    LineRenderer aimLine;
+
     // Start is called before the first frame update
     void Start()
     {
+        player = gameObject;
         aimLine = GetComponent<LineRenderer>();
     }
 
@@ -24,7 +26,7 @@ public class LaserShooter : MonoBehaviour
         Vector3 direction = mousePos - transform.position;
         transform.up = direction;
         transform.rotation = Quaternion.Euler(0, 0, transform.rotation.eulerAngles.z);
-        
+
         // Shoot the laser beam
         if (Input.GetMouseButtonDown(0))
         {
@@ -32,13 +34,20 @@ public class LaserShooter : MonoBehaviour
             Destroy(laserBeam, 2f);
             StartCoroutine(ToggleAimLine());
         }
-        
+
         DrawAimLine(direction);
+        
+        // Move the player 
+        float moveSpeed = 5f;
+        float horizontal = Input.GetAxis("Horizontal");
+        float vertical = Input.GetAxis("Vertical");
+        Vector3 moveDirection = new Vector3(horizontal, vertical, 0);
+        transform.position += moveDirection * moveSpeed * Time.deltaTime;
     }
 
     // Draw aimline to the nearest wall
     private void DrawAimLine(Vector3 direction)
-    {  
+    {
         // Ignore the player's collider
         Physics2D.queriesStartInColliders = false;
         RaycastHit2D hit = Physics2D.Raycast(transform.position, direction, Mathf.Infinity);
@@ -56,7 +65,7 @@ public class LaserShooter : MonoBehaviour
             aimLine.SetPosition(1, transform.position + direction * 100);
         }
     }
-    
+
     // Turn on/off the aimline for a period
     private IEnumerator ToggleAimLine()
     {

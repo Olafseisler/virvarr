@@ -6,12 +6,12 @@ public class Enemy : MonoBehaviour
 {
     [SerializeField] private MyColor enemyColor;
     [SerializeField] private bool isMoving = false;
-    
+
     public MyColor GetColor()
     {
         return enemyColor;
     }
-    
+
     // Start is called before the first frame update
     void Start()
     {
@@ -34,6 +34,5 @@ public class Enemy : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
     }
 }

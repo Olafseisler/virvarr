@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using System.Collections.Generic;
 
@@ -18,6 +19,8 @@ public class LaserBeam2D : MonoBehaviour
     private Vector2 direction;
     private int currentColorIndex = 0;
     private List<Vector3> positions = new List<Vector3>();
+    private bool isInvincible = false;
+    
 
     void Start()
     {
@@ -27,7 +30,7 @@ public class LaserBeam2D : MonoBehaviour
             return;
         }
 
-        direction = transform.up; 
+        direction = transform.up;
         positions.Add(transform.position);
 
         CreateNewLineRenderer();
@@ -51,6 +54,7 @@ public class LaserBeam2D : MonoBehaviour
                 GameController.instance.LoseGame();
                 return;
             }
+
             endPosition = hit.point;
             ReflectLaser(hit.normal);
 
@@ -82,19 +86,19 @@ public class LaserBeam2D : MonoBehaviour
     private void CreateNewLineRenderer()
     {
         GameObject newLineRendererObj = new GameObject("LaserSegment");
-        newLineRendererObj.transform.SetParent(this.transform);
+        newLineRendererObj.transform.SetParent(transform);
 
         LineRenderer newLineRenderer = newLineRendererObj.AddComponent<LineRenderer>();
         newLineRenderer.startColor = GetColor(myColor: laserColors[currentColorIndex]);
         newLineRenderer.endColor = GetColor(myColor: laserColors[currentColorIndex]);
         newLineRenderer.positionCount = 0;
-        newLineRenderer.startWidth = 0.1f; 
-        newLineRenderer.endWidth = 0.1f; 
-        newLineRenderer.material = new Material(Shader.Find("Sprites/Default")); 
+        newLineRenderer.startWidth = 0.1f;
+        newLineRenderer.endWidth = 0.1f;
+        newLineRenderer.material = new Material(Shader.Find("Sprites/Default"));
 
         lineRenderers.Add(newLineRenderer);
     }
-    
+
     private Color GetColor(MyColor myColor)
     {
         switch (myColor)
@@ -121,12 +125,26 @@ public class LaserBeam2D : MonoBehaviour
     {
         if (enemyObj.GetComponent<Enemy>().GetColor() == laserColors[currentColorIndex])
         {
+            StartCoroutine(TeleportPlayer(enemyObj.transform.position));
             Destroy(enemyObj);
         }
         else
         {
-            Destroy(this.gameObject);
+            Destroy(gameObject);
         }
     }
 
+    private IEnumerator TeleportPlayer(Vector2 position)
+    {
+        if (isInvincible)
+        {
+            yield break;
+        }
+        isInvincible = true;
+        LaserShooter.player.transform.position = position;
+        LaserShooter.player.layer = LayerMask.NameToLayer("Ignore Raycast");
+        yield return new WaitForSeconds(1f);
+        LaserShooter.player.layer = LayerMask.NameToLayer("Default");
+        isInvincible = false;
+    }
 }
