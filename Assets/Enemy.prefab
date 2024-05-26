@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 5735929438697500037}
   - component: {fileID: 4779085589683890036}
   - component: {fileID: 8333329432031775747}
+  - component: {fileID: 8732739146036248148}
   m_Layer: 0
   m_Name: Enemy
   m_TagString: Enemy
@@ -99,6 +100,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyColor: 0
+  waypoints: []
+  attackRange: 5
+  moveForce: 5
 --- !u!60 &8333329432031775747
 PolygonCollider2D:
   m_ObjectHideFlags: 0
@@ -147,3 +151,30 @@ PolygonCollider2D:
       - {x: -0.5, y: -0.28866667}
       - {x: 0.5, y: -0.28866667}
   m_UseDelaunayMesh: 0
+--- !u!50 &8732739146036248148
+Rigidbody2D:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 834401753530520474}
+  m_BodyType: 1
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDrag: 0
+  m_AngularDrag: 0.05
+  m_GravityScale: 0
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 0

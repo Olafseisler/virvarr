@@ -4,14 +4,24 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
+    enum EnemyBehavior
+    {
+        Stationary,
+        Patrol,
+        Attack
+    }
+
     [SerializeField] private MyColor enemyColor;
-    [SerializeField] private bool isMoving = false;
     [SerializeField] List<Transform> waypoints = new List<Transform>();
+    [SerializeField] private float attackRange = 5f;
+    [SerializeField] private float moveForce = 3f;
 
     private int _wayPointIndex = 0;
     private Transform nextWaypoint;
+    private EnemyBehavior _enemyBehavior = EnemyBehavior.Stationary;
     private bool movingForward = true;
-    
+    private Vector3 _restPosition;
+
     public MyColor GetColor()
     {
         return enemyColor;
@@ -20,6 +30,7 @@ public class Enemy : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        _restPosition = transform.position;
         // Set the sprite color
         SpriteRenderer spriteRenderer = GetComponent<SpriteRenderer>();
         switch (enemyColor)
@@ -34,17 +45,47 @@ public class Enemy : MonoBehaviour
                 spriteRenderer.color = Color.blue;
                 break;
         }
-        
-        if (isMoving)
+
+        if (waypoints.Count > 0)
             nextWaypoint = waypoints[_wayPointIndex];
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (!isMoving)
-            return;
+        // If player is within a certain distance, change the enemy behavior to attack
+        if (Vector3.Distance(transform.position, LaserShooter.player.transform.position) < attackRange)
+        {
+            RaycastHit2D hit = Physics2D.Raycast(transform.position, LaserShooter.player.transform.position - transform.position);
+            _enemyBehavior = hit.collider.CompareTag("Player") ? EnemyBehavior.Attack : waypoints.Count > 0 ? EnemyBehavior.Patrol : EnemyBehavior.Stationary;
+        }
+        else
+        {
+            _enemyBehavior = waypoints.Count > 0 ? EnemyBehavior.Patrol : EnemyBehavior.Stationary;
+        }
 
+        if (_enemyBehavior == EnemyBehavior.Patrol)
+        {
+            Patrol();
+        }
+
+        if (_enemyBehavior == EnemyBehavior.Attack)
+        {
+            Attack();
+        } 
+        if (_enemyBehavior == EnemyBehavior.Stationary)
+        {
+            // Move to the rest position
+            if (Vector3.Distance(transform.position, _restPosition) > 0.1f)
+            {
+                Vector3 direction = (_restPosition - transform.position).normalized;
+                transform.position += direction * Time.deltaTime;
+            }
+        }
+    }
+
+    void Patrol()
+    {
         // Move the enemy towards the next waypoint
         // If the enemy reaches the last waypoint, start moving backwards through the waypoints
         Vector3 currentPosition = transform.position;
@@ -60,6 +101,23 @@ public class Enemy : MonoBehaviour
                 _wayPointIndex = 0;
                 waypoints.Reverse();
             }
+        }
+    }
+
+    void Attack()
+    {
+        // Move the enemy towards the player
+        // If the enemy reaches the player, deal damage to the player
+        Vector2 dirToPlayer = LaserShooter.player.transform.position - transform.position;
+        transform.up = dirToPlayer;
+        transform.position += (Vector3)dirToPlayer.normalized * Time.deltaTime;
+    }
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            GameController.instance.LoseGame();
         }
     }
 }

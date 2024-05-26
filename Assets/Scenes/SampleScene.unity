@@ -2344,7 +2344,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c8fcf74ddff44484880d51d95ceae3a3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveForce: 2
+  moveForce: 5
   laserBeamPrefab: {fileID: 8635483053517394291, guid: 940a85c55c7f54a26bee29bf7c9aee77, type: 3}
   laserSpeed: 1
 --- !u!4 &1507365036
@@ -3114,7 +3114,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4779085589683890036, guid: 3d6417bf9f560404297b8a3482726ab3, type: 3}
       propertyPath: waypoints.Array.size
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
