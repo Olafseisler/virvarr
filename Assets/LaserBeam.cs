@@ -1,10 +1,17 @@
 using UnityEngine;
 using System.Collections.Generic;
 
+public enum MyColor
+{
+    Red,
+    Green,
+    Blue
+}
+
 public class LaserBeam2D : MonoBehaviour
 {
-    public float speed = 10f; // Speed of the laser beam
-    public List<Color> laserColors; // List of colors for the laser beam
+    public float speed = 15f; // Speed of the laser beam
+    public List<MyColor> laserColors; // List of colors for the laser beam
     public float offset = 0.01f; // Small offset to prevent sticking to walls
 
     private List<LineRenderer> lineRenderers = new List<LineRenderer>();
@@ -34,6 +41,16 @@ public class LaserBeam2D : MonoBehaviour
         RaycastHit2D hit = Physics2D.Raycast(startPosition, direction, speed * Time.deltaTime);
         if (hit.collider != null)
         {
+            if (hit.collider.CompareTag("Enemy"))
+            {
+                HitEnemy(hit.collider.gameObject);
+                return;
+            }
+            else if (hit.collider.CompareTag("Player"))
+            {
+                GameController.instance.LoseGame();
+                return;
+            }
             endPosition = hit.point;
             ReflectLaser(hit.normal);
 
@@ -68,14 +85,29 @@ public class LaserBeam2D : MonoBehaviour
         newLineRendererObj.transform.SetParent(this.transform);
 
         LineRenderer newLineRenderer = newLineRendererObj.AddComponent<LineRenderer>();
-        newLineRenderer.startColor = laserColors[currentColorIndex];
-        newLineRenderer.endColor = laserColors[currentColorIndex];
+        newLineRenderer.startColor = GetColor(myColor: laserColors[currentColorIndex]);
+        newLineRenderer.endColor = GetColor(myColor: laserColors[currentColorIndex]);
         newLineRenderer.positionCount = 0;
         newLineRenderer.startWidth = 0.1f; 
         newLineRenderer.endWidth = 0.1f; 
         newLineRenderer.material = new Material(Shader.Find("Sprites/Default")); 
 
         lineRenderers.Add(newLineRenderer);
+    }
+    
+    private Color GetColor(MyColor myColor)
+    {
+        switch (myColor)
+        {
+            case MyColor.Red:
+                return Color.red;
+            case MyColor.Green:
+                return Color.green;
+            case MyColor.Blue:
+                return Color.blue;
+            default:
+                return Color.white;
+        }
     }
 
     private void UpdateCurrentLineRenderer()
@@ -84,5 +116,17 @@ public class LaserBeam2D : MonoBehaviour
         currentLineRenderer.positionCount = positions.Count;
         currentLineRenderer.SetPositions(positions.ToArray());
     }
-    
+
+    private void HitEnemy(GameObject enemyObj)
+    {
+        if (enemyObj.GetComponent<Enemy>().GetColor() == laserColors[currentColorIndex])
+        {
+            Destroy(enemyObj);
+        }
+        else
+        {
+            Destroy(this.gameObject);
+        }
+    }
+
 }
