@@ -46,7 +46,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a2832d6eb4048432d8f0a1aa10941f91, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 10
+  speed: 8
   laserColors: 000000000100000002000000
   offset: 0.01
 --- !u!212 &9075110382203399413

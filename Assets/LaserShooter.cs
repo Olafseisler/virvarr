@@ -5,16 +5,20 @@ using UnityEngine;
 
 public class LaserShooter : MonoBehaviour
 {
+    [SerializeField] private float moveForce = 5f;
     [SerializeField] private GameObject laserBeamPrefab;
     [SerializeField] private float laserSpeed = 10f; // Desired speed of the laser beam
     
     public static GameObject player;
-    LineRenderer aimLine;
+    private LineRenderer aimLine;
+    private bool touchingWall = false;
+    private Rigidbody2D rb;
 
     // Start is called before the first frame update
     void Start()
     {
         player = gameObject;
+        rb = GetComponent<Rigidbody2D>();
         aimLine = GetComponent<LineRenderer>();
     }
 
@@ -37,12 +41,17 @@ public class LaserShooter : MonoBehaviour
 
         DrawAimLine(direction);
         
-        // Move the player 
-        float moveSpeed = 5f;
-        float horizontal = Input.GetAxis("Horizontal");
-        float vertical = Input.GetAxis("Vertical");
-        Vector3 moveDirection = new Vector3(horizontal, vertical, 0);
-        transform.position += moveDirection * moveSpeed * Time.deltaTime;
+
+        
+    }
+
+    private void FixedUpdate()
+    {
+        // Move the player's rigidbody
+        float moveHorizontal = Input.GetAxis("Horizontal");
+        float moveVertical = Input.GetAxis("Vertical");
+        Vector2 movement = new Vector2(moveHorizontal, moveVertical);
+        rb.AddForce(movement * moveForce);
     }
 
     // Draw aimline to the nearest wall
@@ -72,5 +81,14 @@ public class LaserShooter : MonoBehaviour
         aimLine.enabled = false;
         yield return new WaitForSeconds(1f);
         aimLine.enabled = true;
+    }
+
+    private void OnCollisionEnter2D(Collision2D col)
+    {
+        touchingWall = true;
+    }
+    private void OnCollisionExit2D(Collision2D col)
+    {
+        touchingWall = false;
     }
 }
