@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -71,41 +72,45 @@ public class GameController : MonoBehaviour
     
     public void SaveTime()
     {
-        // Save the time elapsed to PlayerPrefs
-        float[] bestTimes = new float[10];
-        for (int i = 0; i < 10; i++)
-        {
-            bestTimes[i] = PlayerPrefs.GetFloat("BestTime" + i, 0);
-        }
+        // Save the time elapsed to PlayerPrefs along with the timestamp
+        var timestamp = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+        var bestTimes = GetBestTimes();
+        bestTimes.Add(timeElapsed, timestamp);
+        bestTimes = bestTimes.OrderBy(x => x.Key).ToDictionary(x => x.Key, x => x.Value);
         
-        // Check if the current time is one of the best times
         for (int i = 0; i < 10; i++)
         {
-            if (timeElapsed < bestTimes[i])
+            if (i < bestTimes.Count)
             {
-                // Shift the other times
-                for (int j = 9; j > i; j--)
-                {
-                    bestTimes[j] = bestTimes[j - 1];
-                }
-                bestTimes[i] = timeElapsed;
-                break;
+                var bestTime = bestTimes.ElementAt(i);
+                PlayerPrefs.SetString("BestTime" + i, bestTime.Key + " " + bestTime.Value);
+            }
+            else
+            {
+                PlayerPrefs.SetString("BestTime" + i, "");
             }
         }
         
-        // Save the best times to PlayerPrefs
-        for (int i = 0; i < 10; i++)
-        {
-            PlayerPrefs.SetFloat("BestTime" + i, bestTimes[i]);
-        }
+        
     }
     
-    public Dictionary<int, float> GetBestTimes()
+    public Dictionary<float, string> GetBestTimes()
     {
-        Dictionary<int, float> bestTimes = new Dictionary<int, float>();
+        Dictionary<float, string> bestTimes = new Dictionary<float, string>();
         for (int i = 0; i < 10; i++)
         {
-            bestTimes.Add(i, PlayerPrefs.GetFloat("BestTime" + i, 0));
+            var bestTimeString = PlayerPrefs.GetString("BestTime" + i);
+            if (bestTimeString != "")
+            {
+                var components = bestTimeString.Split(" ");
+                var bestTime = float.Parse(components[0]);
+                var timestamp = components[1];
+                bestTimes.Add(bestTime, timestamp);
+            }
+            else
+            {
+                break;
+            }
         }
         return bestTimes;
     } 
