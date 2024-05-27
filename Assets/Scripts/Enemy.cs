@@ -54,10 +54,11 @@ public class Enemy : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        var gcInstance = GameController.instance;
         // If player is within a certain distance, change the enemy behavior to attack
-        if (Vector2.Distance(transform.position, GameController.instance.player.transform.position) < attackRange)
+        if (gcInstance && Vector2.Distance(transform.position, gcInstance.player.transform.position) < attackRange)
         {
-            RaycastHit2D hit = Physics2D.Raycast(transform.position,    
+            RaycastHit2D hit = Physics2D.Raycast(transform.position,
                 LaserShooter.player.transform.position - transform.position);
             _enemyBehavior = hit.collider.CompareTag("Player") ? EnemyBehavior.Attack :
                 waypoints.Count > 0 ? EnemyBehavior.Patrol : EnemyBehavior.Stationary;
@@ -124,5 +125,4 @@ public class Enemy : MonoBehaviour
             GameController.instance.LoseGame();
         }
     }
-    
 }

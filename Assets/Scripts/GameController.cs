@@ -36,13 +36,21 @@ public class GameController : MonoBehaviour
     {
         timeElapsed += Time.deltaTime;
         timeText.text = "Time: " + timeElapsed.ToString("F1");
+        
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            GoToMainMenu();
+        }
     }
 
     // When scene is loaded
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        player = GameObject.FindGameObjectWithTag("Player");
-        player.layer = LayerMask.NameToLayer("Default");
+        if (scene.buildIndex != 0)
+        {
+            player = GameObject.FindGameObjectWithTag("Player");
+            player.layer = LayerMask.NameToLayer("Default");
+        }
     }
 
     public void LoseGame()
@@ -73,6 +81,7 @@ public class GameController : MonoBehaviour
             winScreen.GetComponentInChildren<TMPro.TextMeshProUGUI>().text =
                 "You Win!\nTotal time: " + timeElapsed.ToString("F1") + " seconds";
             player.GetComponent<LaserShooter>().enabled = false;
+            Time.timeScale = 0;
         }
     }
 
