@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 6463485125401307712}
   - component: {fileID: 1944133424281793971}
   - component: {fileID: 5219809558235143303}
+  - component: {fileID: 3025952568493503157}
   m_Layer: 0
   m_Name: Shooter
   m_TagString: Player
@@ -280,6 +281,27 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 1
   m_Constraints: 0
+--- !u!95 &3025952568493503157
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5228516904694341290}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: beb9e2144ee1c4ef89772eacb647714b, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &8963477317791085363
 GameObject:
   m_ObjectHideFlags: 0

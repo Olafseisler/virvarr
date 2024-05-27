@@ -10,14 +10,16 @@ public class GameController : MonoBehaviour
     public static GameController instance;
     [SerializeField] private TMPro.TextMeshProUGUI timeText;
     
-    private  float timeElapsed = 0f;
-    private GameObject player;
+    private float timeElapsed = 0f;
+    public GameObject player;
 
     private void Awake()
     {
         if (instance == null)
         {
             instance = this;
+            player = GameObject.FindGameObjectWithTag("Player");
+            SceneManager.sceneLoaded += OnSceneLoaded;
         }
         else
         {
@@ -31,6 +33,13 @@ public class GameController : MonoBehaviour
     {
         timeElapsed += Time.deltaTime;
         timeText.text = "Time: " + timeElapsed.ToString("F1");
+    }
+    
+    // When scene is loaded
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        player = GameObject.FindGameObjectWithTag("Player");
+        player.layer = LayerMask.NameToLayer("Default");
     }
     
     public void LoseGame()

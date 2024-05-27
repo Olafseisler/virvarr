@@ -1,6 +1,8 @@
+using System;
 using System.Collections;
 using UnityEngine;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 
 public enum MyColor
 {
@@ -14,14 +16,14 @@ public class LaserBeam2D : MonoBehaviour
     public float speed = 15f; // Speed of the laser beam
     public List<MyColor> laserColors; // List of colors for the laser beam
     public float offset = 0.01f; // Small offset to prevent sticking to walls
-
+    public static event Action OnHitEnemy;
     private List<LineRenderer> lineRenderers = new List<LineRenderer>();
     private Vector2 direction;
     private int currentColorIndex = 0;
     private List<Vector3> positions = new List<Vector3>();
     private bool isInvincible = false;
     
-
+    
     void Start()
     {
         if (laserColors.Count == 0)
@@ -126,7 +128,8 @@ public class LaserBeam2D : MonoBehaviour
     {
         if (enemyObj.GetComponent<Enemy>().GetColor() == laserColors[currentColorIndex])
         {
-            StartCoroutine(TeleportPlayer(enemyObj.transform.position));
+            OnHitEnemy?.Invoke();
+            GameController.instance.player.transform.position = enemyObj.transform.position;
             Destroy(enemyObj);
         }
         else
@@ -134,18 +137,5 @@ public class LaserBeam2D : MonoBehaviour
             Destroy(gameObject);
         }
     }
-
-    private IEnumerator TeleportPlayer(Vector2 position)
-    {
-        if (isInvincible)
-        {
-            yield break;
-        }
-        isInvincible = true;
-        LaserShooter.player.transform.position = position;
-        LaserShooter.player.layer = LayerMask.NameToLayer("Ignore Raycast");
-        yield return new WaitForSeconds(1f);
-        LaserShooter.player.layer = LayerMask.NameToLayer("Default");
-        isInvincible = false;
-    }
+    
 }

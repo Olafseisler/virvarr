@@ -8,11 +8,13 @@ public class LaserShooter : MonoBehaviour
     [SerializeField] private float moveForce = 5f;
     [SerializeField] private GameObject laserBeamPrefab;
     [SerializeField] private float laserSpeed = 10f; // Desired speed of the laser beam
-    
+
     public static GameObject player;
     private LineRenderer aimLine;
     private bool touchingWall = false;
     private Rigidbody2D rb;
+    private Animator _animator;
+    private bool _isInvincible = false;
 
     // Start is called before the first frame update
     void Start()
@@ -20,6 +22,35 @@ public class LaserShooter : MonoBehaviour
         player = gameObject;
         rb = GetComponent<Rigidbody2D>();
         aimLine = GetComponent<LineRenderer>();
+        _animator = GetComponent<Animator>();
+    }
+
+    private void OnEnable()
+    {
+        LaserBeam2D.OnHitEnemy += PlayTeleportAnimation;
+    }
+
+    private void OnDisable()
+    {
+        LaserBeam2D.OnHitEnemy -= PlayTeleportAnimation;
+    }
+
+    private void PlayTeleportAnimation()
+    {
+        _animator.SetTrigger("Teleported");
+    }
+
+    public void ToggleInvincible()
+    {
+        Debug.Log("Toggling invincibility");
+        if (gameObject.layer == LayerMask.NameToLayer("Default"))
+        {
+            gameObject.layer = LayerMask.NameToLayer("Ignore Raycast");
+        }
+        else
+        {
+            gameObject.layer = LayerMask.NameToLayer("Default");
+        }
     }
 
     // Update is called once per frame
@@ -40,9 +71,6 @@ public class LaserShooter : MonoBehaviour
         }
 
         DrawAimLine(direction);
-        
-
-        
     }
 
     private void FixedUpdate()
@@ -87,6 +115,7 @@ public class LaserShooter : MonoBehaviour
     {
         touchingWall = true;
     }
+
     private void OnCollisionExit2D(Collision2D col)
     {
         touchingWall = false;

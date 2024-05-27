@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -12,9 +13,9 @@ public class Enemy : MonoBehaviour
     }
 
     [SerializeField] private MyColor enemyColor;
-    [SerializeField] List<Transform> waypoints = new List<Transform>();
+    [SerializeField] List<Transform> waypoints = new();
     [SerializeField] private float attackRange = 5f;
-    [SerializeField] private float moveForce = 3f;
+    [SerializeField] private float moveSpeed = 3f;
 
     private int _wayPointIndex = 0;
     private Transform nextWaypoint;
@@ -54,10 +55,12 @@ public class Enemy : MonoBehaviour
     void Update()
     {
         // If player is within a certain distance, change the enemy behavior to attack
-        if (Vector2.Distance(transform.position, LaserShooter.player.transform.position) < attackRange)
+        if (Vector2.Distance(transform.position, GameController.instance.player.transform.position) < attackRange)
         {
-            RaycastHit2D hit = Physics2D.Raycast(transform.position, LaserShooter.player.transform.position - transform.position);
-            _enemyBehavior = hit.collider.CompareTag("Player") ? EnemyBehavior.Attack : waypoints.Count > 0 ? EnemyBehavior.Patrol : EnemyBehavior.Stationary;
+            RaycastHit2D hit = Physics2D.Raycast(transform.position,    
+                LaserShooter.player.transform.position - transform.position);
+            _enemyBehavior = hit.collider.CompareTag("Player") ? EnemyBehavior.Attack :
+                waypoints.Count > 0 ? EnemyBehavior.Patrol : EnemyBehavior.Stationary;
         }
         else
         {
@@ -72,7 +75,8 @@ public class Enemy : MonoBehaviour
         if (_enemyBehavior == EnemyBehavior.Attack)
         {
             Attack();
-        } 
+        }
+
         if (_enemyBehavior == EnemyBehavior.Stationary)
         {
             // Move to the rest position
@@ -110,7 +114,7 @@ public class Enemy : MonoBehaviour
         // If the enemy reaches the player, deal damage to the player
         Vector2 dirToPlayer = LaserShooter.player.transform.position - transform.position;
         transform.up = dirToPlayer;
-        transform.position += (Vector3)dirToPlayer.normalized * Time.deltaTime;
+        transform.position += (Vector3)dirToPlayer.normalized * Time.deltaTime * moveSpeed;
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -120,4 +124,5 @@ public class Enemy : MonoBehaviour
             GameController.instance.LoseGame();
         }
     }
+    
 }
