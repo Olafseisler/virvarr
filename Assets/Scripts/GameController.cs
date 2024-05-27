@@ -42,7 +42,7 @@ public class GameController : MonoBehaviour
     
     public void WinGame()
     {
-        Debug.Log("You Win!");
+        Debug.Log("You Win this level!");
         // Load the next level if it is not the last level
         if (SceneManager.GetActiveScene().buildIndex < SceneManager.sceneCountInBuildSettings - 1)
         {

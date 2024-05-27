@@ -54,7 +54,7 @@ public class Enemy : MonoBehaviour
     void Update()
     {
         // If player is within a certain distance, change the enemy behavior to attack
-        if (Vector3.Distance(transform.position, LaserShooter.player.transform.position) < attackRange)
+        if (Vector2.Distance(transform.position, LaserShooter.player.transform.position) < attackRange)
         {
             RaycastHit2D hit = Physics2D.Raycast(transform.position, LaserShooter.player.transform.position - transform.position);
             _enemyBehavior = hit.collider.CompareTag("Player") ? EnemyBehavior.Attack : waypoints.Count > 0 ? EnemyBehavior.Patrol : EnemyBehavior.Stationary;
@@ -113,9 +113,9 @@ public class Enemy : MonoBehaviour
         transform.position += (Vector3)dirToPlayer.normalized * Time.deltaTime;
     }
 
-    private void OnTriggerEnter2D(Collider2D other)
+    private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (other.CompareTag("Player"))
+        if (collision.gameObject.CompareTag("Player"))
         {
             GameController.instance.LoseGame();
         }

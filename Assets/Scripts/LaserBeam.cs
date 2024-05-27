@@ -39,7 +39,7 @@ public class LaserBeam2D : MonoBehaviour
     void Update()
     {
         Vector2 startPosition = transform.position;
-        Vector2 endPosition = startPosition + direction * speed * Time.deltaTime;
+        Vector2 endPosition = startPosition + speed * Time.deltaTime * direction;
 
         RaycastHit2D hit = Physics2D.Raycast(startPosition, direction, speed * Time.deltaTime);
         if (hit.collider != null)
@@ -63,7 +63,6 @@ public class LaserBeam2D : MonoBehaviour
 
             // Add the end position of the current segment
             positions.Add(endPosition);
-
             currentColorIndex = (currentColorIndex + 1) % laserColors.Count;
             CreateNewLineRenderer();
 
@@ -119,6 +118,8 @@ public class LaserBeam2D : MonoBehaviour
         LineRenderer currentLineRenderer = lineRenderers[lineRenderers.Count - 1];
         currentLineRenderer.positionCount = positions.Count;
         currentLineRenderer.SetPositions(positions.ToArray());
+        // Set the sorting layer index
+        currentLineRenderer.sortingOrder = 1;
     }
 
     private void HitEnemy(GameObject enemyObj)
