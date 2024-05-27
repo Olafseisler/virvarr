@@ -10,7 +10,8 @@ public class GameController : MonoBehaviour
 {
     public static GameController instance;
     [SerializeField] private TMPro.TextMeshProUGUI timeText;
-    
+    [SerializeField] private GameObject winScreen;
+
     private float timeElapsed = 0f;
     public GameObject player;
 
@@ -26,6 +27,7 @@ public class GameController : MonoBehaviour
         {
             Destroy(gameObject);
         }
+
         DontDestroyOnLoad(gameObject);
     }
 
@@ -35,21 +37,21 @@ public class GameController : MonoBehaviour
         timeElapsed += Time.deltaTime;
         timeText.text = "Time: " + timeElapsed.ToString("F1");
     }
-    
+
     // When scene is loaded
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         player = GameObject.FindGameObjectWithTag("Player");
         player.layer = LayerMask.NameToLayer("Default");
     }
-    
+
     public void LoseGame()
     {
         Debug.Log("Game Over!");
         // Reload the level
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
-    
+
     public void WinGame()
     {
         Debug.Log("You Win this level!");
@@ -62,14 +64,18 @@ public class GameController : MonoBehaviour
         {
             Debug.Log("You have completed all levels!");
         }
-        
+
         // If it is the last level, save the time elapsed to PlayerPrefs
         if (SceneManager.GetActiveScene().buildIndex == SceneManager.sceneCountInBuildSettings - 1)
         {
             SaveTime();
+            winScreen.SetActive(true);
+            winScreen.GetComponentInChildren<TMPro.TextMeshProUGUI>().text =
+                "You Win!\nTotal time: " + timeElapsed.ToString("F1") + " seconds";
+            player.GetComponent<LaserShooter>().enabled = false;
         }
     }
-    
+
     public void SaveTime()
     {
         // Save the time elapsed to PlayerPrefs along with the timestamp
@@ -77,7 +83,7 @@ public class GameController : MonoBehaviour
         var bestTimes = GetBestTimes();
         bestTimes.Add(timeElapsed, timestamp);
         bestTimes = bestTimes.OrderBy(x => x.Key).ToDictionary(x => x.Key, x => x.Value);
-        
+
         for (int i = 0; i < 10; i++)
         {
             if (i < bestTimes.Count)
@@ -90,10 +96,8 @@ public class GameController : MonoBehaviour
                 PlayerPrefs.SetString("BestTime" + i, "");
             }
         }
-        
-        
     }
-    
+
     public Dictionary<float, string> GetBestTimes()
     {
         Dictionary<float, string> bestTimes = new Dictionary<float, string>();
@@ -112,7 +116,12 @@ public class GameController : MonoBehaviour
                 break;
             }
         }
+
         return bestTimes;
-    } 
-    
+    }
+
+    public void GoToMainMenu()
+    {
+        SceneManager.LoadScene(0);
+    }
 }
