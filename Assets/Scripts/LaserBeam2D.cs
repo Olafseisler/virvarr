@@ -16,12 +16,14 @@ public class LaserBeam2D : MonoBehaviour
     public float speed = 15f; // Speed of the laser beam
     public List<MyColor> laserColors; // List of colors for the laser beam
     public float offset = 0.01f; // Small offset to prevent sticking to walls
-    public static event Action OnHitEnemy;
+    public static event Action<GameObject> OnHitEnemy;
+    
+    [SerializeField] private AudioSource audioSource;
+    [SerializeField] private AudioClip[] audioClips;
     private List<LineRenderer> lineRenderers = new List<LineRenderer>();
     private Vector2 direction;
     private int currentColorIndex = 0;
     private List<Vector3> positions = new List<Vector3>();
-    private bool isInvincible = false;
     
     
     void Start()
@@ -34,6 +36,7 @@ public class LaserBeam2D : MonoBehaviour
 
         direction = transform.up;
         positions.Add(transform.position);
+        audioSource = GetComponent<AudioSource>();
 
         CreateNewLineRenderer();
     }
@@ -98,6 +101,9 @@ public class LaserBeam2D : MonoBehaviour
         newLineRenderer.material = new Material(Shader.Find("Sprites/Default"));
 
         lineRenderers.Add(newLineRenderer);
+        
+        // Play a random laser sound
+        audioSource.PlayOneShot(audioClips[UnityEngine.Random.Range(0, audioClips.Length)]);
     }
 
     private Color GetColor(MyColor myColor)
@@ -128,8 +134,8 @@ public class LaserBeam2D : MonoBehaviour
     {
         if (enemyObj.GetComponent<Enemy>().GetColor() == laserColors[currentColorIndex])
         {
-            OnHitEnemy?.Invoke();
-            GameController.instance.player.transform.position = enemyObj.transform.position;
+            Vector2 enemyPosition = enemyObj.transform.position;
+            OnHitEnemy?.Invoke(enemyObj);
             Destroy(enemyObj);
         }
         else
@@ -137,5 +143,5 @@ public class LaserBeam2D : MonoBehaviour
             Destroy(gameObject);
         }
     }
-    
+
 }

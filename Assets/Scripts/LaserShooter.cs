@@ -16,6 +16,8 @@ public class LaserShooter : MonoBehaviour
     private Animator _animator;
     private bool _isInvincible = false;
 
+    private Vector2 enemyPos;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -35,9 +37,16 @@ public class LaserShooter : MonoBehaviour
         LaserBeam2D.OnHitEnemy -= PlayTeleportAnimation;
     }
 
-    private void PlayTeleportAnimation()
+    private void PlayTeleportAnimation(GameObject go)
     {
+        enemyPos = go.transform.position;
+        Invoke(nameof(MoveToEnemy), 0.15f);
         _animator.SetTrigger("Teleported");
+    }
+    
+    private void MoveToEnemy()
+    {
+        transform.position = enemyPos;
     }
 
     public void ToggleInvincible()

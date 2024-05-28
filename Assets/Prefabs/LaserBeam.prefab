@@ -49,9 +49,10 @@ MonoBehaviour:
   speed: 8
   laserColors: 000000000100000002000000
   offset: 0.01
-  _laserSounds:
-  - {fileID: 8300000, guid: f5ffdfaa6b6104ebcac75554eb803842, type: 3}
+  audioSource: {fileID: 0}
+  audioClips:
   - {fileID: 8300000, guid: 083186dc2edba4865bc76ab7fa9548b8, type: 3}
+  - {fileID: 8300000, guid: f5ffdfaa6b6104ebcac75554eb803842, type: 3}
   - {fileID: 8300000, guid: 1fb0f2493c08e49c5916a0250709925e, type: 3}
 --- !u!120 &7990817730046131445
 LineRenderer:

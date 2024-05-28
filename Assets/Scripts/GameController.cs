@@ -17,6 +17,7 @@ public class GameController : MonoBehaviour
 
     private void Awake()
     {
+        timeElapsed = 0f;
         if (instance == null)
         {
             instance = this;
